@@ -1,0 +1,6 @@
+{
+  "pending": "To be treated",
+  "processing": "In the process of processing",
+  "processed": "Already processed",
+  "fail": "Handling with errors"
+}
