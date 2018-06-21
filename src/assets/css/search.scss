@@ -78,6 +78,14 @@
   }
 }
 
+.showMessage {
+  margin-top: 20px;
+  font-size: 16px;
+  color: red;
+  text-align: left;
+  margin-left: 30px;
+}
+
 input::-webkit-input-placeholder, input:-moz-placeholder, input::-moz-placeholder, input:-ms-input-placeholder{
   color: #eee;
 }

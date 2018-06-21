@@ -7,7 +7,7 @@
             <Input class="inputId" v-model="ID" placeholder="Please Enter ID"></Input>
             <span>Names： </span>
             <Input class="inputIdName" v-model="name" placeholder="Please Enter Names"></Input>
-            <Button class="searchBtn" type="primary" icon="ios-search" @click="searchList">Search</Button>
+            <Button class="searchBtn" type="primary" icon="ios-search" @click="searchList" :loading="loading">Search</Button>
             <div class="addBtn">
               <Upload
                   class="addUpload"
@@ -69,6 +69,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       timer: '',
       modal_loading: false,
       addPeople: {
@@ -217,8 +218,10 @@ export default {
       // 先检查 是否输入 ID 姓名
       let checkEnd = this.checkInfo()
       if (checkEnd) {
+        this.loading = true
         this.$http.get(`/faces?page=${this.pageIndex}&pageSize=${this.pageSize}&name=${this.name}&id=${this.ID}`).then(res => {
           console.log(res)
+          this.loading = false
           this.total = res.data.total
           this.manageList = res.data.result
           if (res.data.result.length === 0) {

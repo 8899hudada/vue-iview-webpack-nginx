@@ -16,7 +16,7 @@
               <FormItem label="Password" prop='password'>
                   <Input type='password' v-model="login.password" autocomplete="off"></Input>
               </FormItem>
-              <Button type="primary" @click='Login'>Log in</Button>
+              <Button type="primary" @click='Login' :loading='loading'>Log in</Button>
           </Form>
         </div>
       </div>
@@ -35,6 +35,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       login: {
         username: '',
         password: ''
@@ -51,8 +52,10 @@ export default {
           })
           return
         }
+        this.loading = true
         // 发送 登录请求
         this.$http.post('/session/login', this.login).then(res => {
+          this.loading = false
           sessionStorage.setItem('token', res.data.result.token)
           setTimeout(() => {
             this.$router.replace({

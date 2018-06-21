@@ -8,7 +8,7 @@
           </div>
           <h3 class="itemName no-wrap">{{item.face_name}}</h3>
           <span class="similar">similarity</span>
-          <span class="similarNumber">{{item.similarity}}%</span>
+          <span class="similarNumber">{{item.similarity.toFixed(2)}}%</span>
         </div>
       </div>
     </div>

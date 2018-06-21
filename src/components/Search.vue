@@ -9,6 +9,7 @@
               class="upload"
               :before-upload="handleUpload"
               type="drag"
+              :show-upload-list = false
               action="">
               <div class="uploadIcon">
                   <img src="../assets/img/camera.png">
@@ -31,13 +32,14 @@
             <label for="Threshold">
               Search Threshold:
             </label>
-            <InputNumber class="inputNumber" name='Threshold' :max="100" :min="0" v-model="threshold" placeholder='0~100'></InputNumber><span class="percent">%</span>
+            <InputNumber class="inputNumber" name='Threshold' :max="100" :min="70" v-model="threshold" placeholder='70~100'></InputNumber><span class="percent">%</span>
             <label for="Range">
               Return Range:
             </label>
             <InputNumber class="inputNumber" name='Range' :max="200" :min="1" v-model="limit" placeholder='1~200'></InputNumber>
-            <Button class="searchbtn" type="primary" @click='search'>Search</Button>
+            <Button class="searchbtn" type="primary" @click='search' :loading="loading">Search</Button>
         </div>
+        <div v-if="showMessage" class="showMessage">{{showMessage}}</div>
       </div>
       <div v-show="!showTop">
         <SearchResults :dataList="dataList" :totalResult="totalResult"></SearchResults>
@@ -56,9 +58,11 @@ export default {
   },
   data () {
     return {
+      showMessage: '',
+      loading: false,
       totalResult: '',
       queryToken: '',
-      threshold: 95,
+      threshold: 70,
       limit: 10,
       showTop: true,
       dataList: [],
@@ -91,10 +95,7 @@ export default {
       }
     },
     search_timer_msg (status) {
-      this.$Message.info({
-        content: `${searchJson[status]}`,
-        duration: 2
-      })
+      this.showMessage = searchJson[status] + ' !!!'
     },
     search_timer_query () {
       let timer = setTimeout(() => {
@@ -106,13 +107,18 @@ export default {
     },
     search_query_token () {
       this.$http.get(`/query/${this.queryToken}`).then(res => {
+        this.dataList = []
+        this.loading = true
+        this.showMessage = ''
         console.log(res)
         if (res.data.status === 'processed') {
           this.dataList = res.data.result
           this.totalResult = String(res.data.total)
           this.showTop = false
+          this.loading = false
         } else if (res.data.status === 'fail') {
           this.search_timer_msg(res.data.status)
+          this.loading = false
         } else {
           this.search_timer_msg(res.data.status)
           this.search_timer_query()
