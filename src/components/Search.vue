@@ -110,6 +110,7 @@ export default {
         this.dataList = []
         this.loading = true
         this.showMessage = ''
+        this.totalResult = String(0)
         console.log(res)
         if (res.data.status === 'processed') {
           this.dataList = res.data.result

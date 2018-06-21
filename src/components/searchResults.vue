@@ -1,8 +1,8 @@
 <template>
     <div class="SearchResults">
       <h3 class="name">Search Results: {{totalResult}}</h3>
-      <div class="contentBox">
-        <div class="content" v-for="(item, index) in dataList" :key="item.face_name + index">
+      <div class="contentBox" v-if="totalResult !== '0'">
+        <div class="content" v-for="(item, index) in dataList.reverse()" :key="item.face_name + index">
           <div class="imgBox">
             <div class="zoomImage" :style="{backgroundImage: 'url('+ item.url +')'}"></div>
           </div>
