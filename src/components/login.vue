@@ -11,10 +11,10 @@
         <div class="formBox">
           <Form :model="login" label-position="top" ref='loginForm' :rules="rules">
               <FormItem label="Username" prop='username'>
-                  <Input type='text' v-model="login.username" autocomplete="off"></Input>
+                  <Input type='text' v-model="login.username" autocomplete="off" />
               </FormItem>
               <FormItem label="Password" prop='password'>
-                  <Input type='password' v-model="login.password" autocomplete="off"></Input>
+                  <Input type='password' v-model="login.password" autocomplete="off" />
               </FormItem>
               <Button type="primary" @click='Login' :loading='loading'>Log in</Button>
           </Form>
@@ -62,6 +62,13 @@ export default {
               name: 'search'
             })
           }, 20)
+        }).catch((err) => {
+          this.$Notice.error({
+            title: 'Login error',
+            desc: err.message,
+            duration: 7
+          })
+          this.loading = false
         })
       })
     }

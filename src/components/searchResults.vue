@@ -2,9 +2,10 @@
     <div class="SearchResults">
       <h3 class="name">Search Results: {{totalResult}}</h3>
       <div class="contentBox" v-if="totalResult !== '0'">
-        <div class="content" v-for="(item, index) in dataList.reverse()" :key="item.face_name + index">
+        <div class="content" v-for="(item, index) in dataList" :key="item.face_name + index">
           <div class="imgBox">
-            <div class="zoomImage" :style="{backgroundImage: 'url('+ item.url +')'}"></div>
+            <img v-if="item.photo_base64 !== ''" class="imgbase64" :src="item.photo_base64">
+            <div v-else class="zoomImage" :style="{backgroundImage: 'url('+ item.url +')'}"></div>
           </div>
           <h3 class="itemName no-wrap">{{item.face_name}}</h3>
           <span class="similar">similarity</span>
@@ -27,7 +28,7 @@ export default {
     totalResult: {
       type: String,
       default: function () {
-        return ''
+        return '0'
       }
     }
   }
@@ -40,12 +41,12 @@ export default {
   padding: 10px 35px 65px;
   .name {
     font-size: 16px;
-    color: #626C77;
+    color: #626c77;
     margin-bottom: 5px;
   }
   .contentBox {
     width: 100%;
-    background-color: #F3F6F9;
+    background-color: #f3f6f9;
     padding: 20px 0 20px 30px;
     position: relative;
     .content {
@@ -56,33 +57,46 @@ export default {
       .imgBox {
         width: 120px;
         height: 120px;
+        .imgbase64 {
+          width: auto;
+          height: 100%;
+        }
         .zoomImage {
-          width:100%;
-          height:0;
+          width: 100%;
+          height: 0;
           padding-bottom: 100%;
-          overflow:hidden;
+          overflow: hidden;
           background-position: center center;
           background-repeat: no-repeat;
-          -webkit-background-size:cover;
-          -moz-background-size:cover;
-          background-size:cover;
+          -webkit-background-size: cover;
+          -moz-background-size: cover;
+          background-size: cover;
         }
       }
       .itemName {
         font-size: 16px;
-        color: #626C77;
+        color: #626c77;
         margin: 10px 0 0;
       }
       .similar {
         font-size: 14px;
-        color: #8998AA;
+        color: #8998aa;
       }
       .similarNumber {
         font-size: 16px;
-        color: #626C77;
+        color: #626c77;
         float: right;
       }
     }
+  }
+}
+.baseImage {
+  width: 120px;
+  height: 120px;
+  text-align: center;
+  img {
+    width: auto;
+    height: 100%;
   }
 }
 </style>

@@ -9,6 +9,10 @@
               class="upload"
               :before-upload="handleUpload"
               type="drag"
+              :format="['jpg', 'png']"
+              :on-format-error="handleFormatError"
+              :max-size="3072"
+              :on-exceeded-size="handleMaxSize"
               :show-upload-list = false
               action="">
               <div class="uploadIcon">
@@ -22,6 +26,10 @@
               class="upload"
               :before-upload="handleUpload"
               type="drag"
+              :format="['jpg', 'png']"
+              :on-format-error="handleFormatError"
+              :max-size="3072"
+              :on-exceeded-size="handleMaxSize"
               action="">
               <div class="uploadIcon">
                   {{dataUrl ? 'Re - Upload' : 'Please Upload a Portrait Photo' }}
@@ -73,21 +81,24 @@ export default {
     chechInfo () {
       // 检查数据是否齐全
       if (!this.threshold) {
-        this.$Message.info({
-          content: 'Please use the correct threshold',
-          duration: 3
+        this.$Notice.info({
+          title: 'threshold error',
+          desc: 'Please use the correct threshold',
+          duration: 7
         })
         return false
       } else if (!this.limit) {
-        this.$Message.info({
-          content: 'Please use the correct range',
-          duration: 3
+        this.$Notice.info({
+          title: 'range error',
+          desc: 'Please use the correct range',
+          duration: 7
         })
         return false
       } else if (!this.dataUrl) {
-        this.$Message.info({
-          content: 'Please upload image',
-          duration: 3
+        this.$Notice.info({
+          title: 'image is empty',
+          desc: 'Please upload image',
+          duration: 7
         })
         return false
       } else {
@@ -124,6 +135,13 @@ export default {
           this.search_timer_msg(res.data.status)
           this.search_timer_query()
         }
+      }).catch((err) => {
+        this.$Notice.error({
+          title: 'Search error',
+          desc: err.message,
+          duration: 7
+        })
+        this.loading = false
       })
     },
     search () {
@@ -136,6 +154,13 @@ export default {
         }).then(res => {
           this.queryToken = res.data.result.query_token
           this.search_query_token()
+        }).catch((err) => {
+          this.$Notice.error({
+            title: 'Search error',
+            desc: err.message,
+            duration: 7
+          })
+          this.loading = false
         })
       }
     },
@@ -146,6 +171,34 @@ export default {
       reader.onloadend = function () {
         that.dataUrl = reader.result
       }
+    },
+    handleFormatError (file) {
+      this.$Notice.warning({
+        title: 'The file format is incorrect',
+        desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.',
+        duration: 7
+      })
+      let _this = this
+      let FormatError = setTimeout(function () {
+        _this.dataUrl = ''
+        if (FormatError) {
+          clearTimeout(FormatError)
+        }
+      }, 30)
+    },
+    handleMaxSize (file) {
+      this.$Notice.warning({
+        title: 'Exceeding file size limit',
+        desc: 'File  ' + file.name + ' is too large, no more than 3M.',
+        duration: 10
+      })
+      let _this = this
+      let MaxSize = setTimeout(function () {
+        _this.dataUrl = ''
+        if (MaxSize) {
+          clearTimeout(MaxSize)
+        }
+      }, 300)
     }
   }
 }

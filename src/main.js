@@ -38,8 +38,9 @@ router.afterEach(() => {
 
 // 状态管理
 const baseURL = {
-  development: 'http://172.16.2.104:5420/api/v1', // 暂时的假的接口
-  production: 'http://172.16.2.104:5420/api/v1'
+  development: '/api/v1', // 后台通过 ngnix 跳转
+  // development: 'http://172.16.2.104:5420/api/v1', // 暂时的假的接口
+  production: '/api/v1'
 }
 
 let instance = axios.create({
@@ -61,17 +62,19 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(function (res) {
   if (res.data.code === 403) {
-    iview.Message.info({
-      content: `${res.data.result}`,
-      duration: 3
+    iview.Notice.error({
+      title: 'request error',
+      desc: `${res.data.result}`,
+      duration: 7
     })
     this.$router.replace({
       name: 'login'
     })
   } else if (res.data.code !== 200) {
-    iview.Message.info({
-      content: `${res.data.result}` || `${res.result}`,
-      duration: 3
+    iview.Notice.error({
+      title: 'request error',
+      desc: `${res.data.result}` || `${res.result}`,
+      duration: 7
     })
     return false
   } else {

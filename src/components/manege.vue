@@ -5,14 +5,18 @@
             <span>Bottom Library ID： </span>
             <!--<InputNumber class="inputId"  :min="1" v-model="ID" placeholder="Please Enter ID"></InputNumber>-->
             <Input class="inputId" v-model="ID" placeholder="Please Enter ID"></Input>
-            <span>Names： </span>
-            <Input class="inputIdName" v-model="name" placeholder="Please Enter Names"></Input>
+            <span>Name： </span>
+            <Input class="inputIdName" v-model="name" placeholder="Please Enter Name"></Input>
             <Button class="searchBtn" type="primary" icon="ios-search" @click="searchList" :loading="loading">Search</Button>
             <div class="addBtn">
               <Upload
                   class="addUpload"
                   :before-upload="handleUpload"
                   type="drag"
+                  :format="['jpg', 'png']"
+                  :on-format-error="handleFormatError"
+                  :max-size="3072"
+                  :on-exceeded-size="handleMaxSize"
                   action="">
                   <Button type="success">
                   <img src="../assets/img/people.png">
@@ -21,10 +25,12 @@
             </div>
         </div>
         <div class="table">
-          <Table stripe  :columns="columns" :data="manageList"></Table>
+          <Table stripe  :columns="columns" :data="manageList" no-data-text="No Data"></Table>
         </div>
         <div class="page">
-          <Page  :total="total" :page-size="pageSize" placement="top" size="small" show-elevator show-sizer show-total @on-change="pageChange" @on-page-size-change="pageSizeChange"></Page>
+          <Page  :total="total" :page-size="pageSize" placement="top" size="small" show-total @on-change="pageChange" @on-page-size-change="pageSizeChange">
+            Total: {{ total }}
+          </Page>
         </div>
     </div>
     <Modal
@@ -93,12 +99,12 @@ export default {
           align: 'center'
         },
         {
-          title: 'Names',
+          title: 'Name',
           key: 'person',
           align: 'center'
         },
         {
-          title: 'Photos',
+          title: 'Photo',
           key: 'photo',
           className: 'zoomImage',
           align: 'center',
@@ -106,10 +112,10 @@ export default {
             return h('div', [
               h('img', {
                 attrs: {
-                  src: params.row.photo
+                  src: params.row.photo_base64 || params.row.photo
                 },
                 style: {
-                  width: '140px',
+                  width: 'auto',
                   height: '90px',
                   marginTop: '5px'
                 }
@@ -135,7 +141,11 @@ export default {
                   console.log('delete:' + params.row.id)
                   this.$http.delete(`/faces/${params.row.id}`).then(res => {
                     // 列表里把这条数据删除
-                    this.$Message.success('delete success')
+                    this.$Notice.success({
+                      title: 'delete',
+                      desc: 'delete success',
+                      duration: 7
+                    })
                     this.manageList = this.remove(this.manageList, params.row.id)
                     this.total = this.total - 1
                     this.searchList()
@@ -164,9 +174,10 @@ export default {
     addPeopleOk () {
       this.$refs.addPeopleForm.validate((valid) => {
         if (!valid) {
-          this.$Message.error({
-            content: 'Please use the correct username',
-            duration: 3
+          this.$Notice.error({
+            title: 'username',
+            desc: 'Please use the correct username',
+            duration: 7
           })
           return
         }
@@ -182,6 +193,7 @@ export default {
           identity: this.addPeople.identity,
           gender: this.addPeople.gender
         }).then(res => {
+          console.log(res)
           this.total = 1
           this.manageList = [res.data.result]
         })
@@ -202,11 +214,41 @@ export default {
         that.addPeopleModal = true
       }
     },
+    handleFormatError (file) {
+      this.$Notice.warning({
+        title: 'The file format is incorrect',
+        desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.',
+        duration: 7
+      })
+      let _this = this
+      let FormatError = setTimeout(function () {
+        _this.addPeopleModal = false
+        if (FormatError) {
+          clearTimeout(FormatError)
+        }
+      }, 20)
+    },
+    handleMaxSize (file) {
+      this.$Notice.warning({
+        title: 'Exceeding file size limit',
+        desc: 'File  ' + file.name + ' is too large, no more than 3M.',
+        duration: 10
+      })
+
+      let _this = this
+      let MaxSize = setTimeout(function () {
+        _this.addPeopleModal = false
+        if (MaxSize) {
+          clearTimeout(MaxSize)
+        }
+      }, 200)
+    },
     checkInfo () {
-      if (this.name === '' && this.ID === '') {
-        this.$Message.info({
-          content: 'Please enter the search conditions',
-          duration: 3
+      if (this.name === '' || this.ID === '') {
+        this.$Notice.info({
+          title: 'search error',
+          desc: 'Please enter the search conditions',
+          duration: 7
         })
         this.manageList = [] // 提示用户输入条件，并清空列表
         return false
@@ -225,11 +267,19 @@ export default {
           this.total = res.data.total
           this.manageList = res.data.result
           if (res.data.result.length === 0) {
-            this.$Message.info({
-              content: 'No matching item',
-              duration: 3
+            this.$Notice.info({
+              title: 'result nothing',
+              desc: 'No matching item',
+              duration: 7
             })
           }
+        }).catch((err) => {
+          this.$Notice.error({
+            title: 'result error',
+            desc: err.message,
+            duration: 7
+          })
+          this.loading = false
         })
       }
     },
