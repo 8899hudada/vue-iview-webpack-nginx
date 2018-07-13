@@ -244,7 +244,7 @@ export default {
       }, 200)
     },
     checkInfo () {
-      if (this.name === '' || this.ID === '') {
+      if (this.name === '' && this.ID === '') {
         this.$Notice.info({
           title: 'search error',
           desc: 'Please enter the search conditions',

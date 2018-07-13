@@ -62,14 +62,15 @@ export default {
               name: 'search'
             })
           }, 20)
-        }).catch((err) => {
-          this.$Notice.error({
-            title: 'Login error',
-            desc: err.message,
-            duration: 7
-          })
-          this.loading = false
         })
+        // .catch((err) => {
+        //   this.$Notice.error({
+        //     title: 'Login error',
+        //     desc: err.message,
+        //     duration: 7
+        //   })
+        //   this.loading = false
+        // })
       })
     }
   }
