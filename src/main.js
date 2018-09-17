@@ -18,9 +18,9 @@ router.beforeEach((to, from, next) => {
   iview.LoadingBar.start()
   if (to.name !== 'login') {
     if (!sessionStorage.getItem('token')) {
-      router.replace({
-        name: 'login'
-      })
+      // router.replace({
+      //   name: 'login'
+      // })
       next()
     } else {
       next()
